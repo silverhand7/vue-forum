@@ -1,21 +1,23 @@
 <template>
-    <h1>{{ thread.title }}</h1>
-    <div class="post-list">
-        <div v-for="postId in thread.posts" :key="postId" class="post">
-            <div class="user-info">
-                <a href="#" class="user-name">{{ userById(postById(postId).userId).name }}</a>
-                <a href="#">
-                    <img :src="userById(postById(postId).userId).avatar" alt="" class="avatar-large">
-                </a>
-                <p class="desktop-only text-small">102 posts</p>
-            </div>
-            <div class="post-content">
-                <div>
-                    <p>{{ postById(postId).text }}</p>
+    <div class="col-large push-top">
+        <h1>{{ thread.title }}</h1>
+        <div class="post-list">
+            <div v-for="postId in thread.posts" :key="postId" class="post">
+                <div class="user-info">
+                    <a href="#" class="user-name">{{ userById(postById(postId).userId).name }}</a>
+                    <a href="#">
+                        <img :src="userById(postById(postId).userId).avatar" alt="" class="avatar-large">
+                    </a>
+                    <p class="desktop-only text-small">102 posts</p>
                 </div>
-            </div>
-            <div class="post-date text-faded">
-                {{ postById(postId).publishedAt }}
+                <div class="post-content">
+                    <div>
+                        <p>{{ postById(postId).text }}</p>
+                    </div>
+                </div>
+                <div class="post-date text-faded">
+                    {{ postById(postId).publishedAt }}
+                </div>
             </div>
         </div>
     </div>
