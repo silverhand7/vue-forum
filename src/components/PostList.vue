@@ -22,6 +22,7 @@
 
 <script>
 import sourceData from '@/data.json';
+
 export default {
     props: {
         posts: {
