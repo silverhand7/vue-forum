@@ -1,13 +1,10 @@
 <template>
-    <div class="col-full">
-        <div v-for="category in categories"
-            :key="category.id"
-            class="forum-list"
-        >
-            <h2 class="list-title">{{ category.name }}</h2>
-            <forum-list :forums="getForumsForCategory(category)"></forum-list>
-        </div>
-    </div>
+    <forum-list v-for="category in categories"
+        :key="category.id"
+        :forums="getForumsForCategory(category)"
+        :category-name="category.name"
+    >
+    </forum-list>
 </template>
 
 <script>
