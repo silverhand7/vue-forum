@@ -43,6 +43,25 @@ export default createStore({
                 user,
                 userId: user.id
             });
+        },
+        async createThread({ commit, state, dispatch }, {
+            text, title, forumId
+        }) {
+            const id = 'ggg' + Math.random();
+            const userId = state.authId;
+            const publishedAt = Math.floor(Date.now() / 1000);
+            const thread = {
+                forumId,
+                title,
+                publishedAt,
+                userId,
+                id
+            }
+            commit('setThread', { thread });
+            commit('appendThreadToUser', { userId, threadId: id });
+            commit('appendThreadToForum', { forumId, threadId: id });
+            dispatch('createPost', { text, threadId: id });
+            return state.threads.find(thread => thread.id === id);
         }
     },
     mutations: {
@@ -50,11 +69,26 @@ export default createStore({
             state.posts.push(post);
         },
         appendPostToThread(state, { postId, threadId}) {
-            state.threads.find(thread => thread.id === threadId).posts.push(postId);
+            const thread = state.threads.find(thread => thread.id === threadId);
+            thread.posts = thread.posts || [];
+            thread.posts.push(postId);
         },
         setUser(state, { user, userId }) {
             const userIndex = state.users.findIndex(user => user.id === userId);
             state.users[userIndex] = user;
+        },
+        setThread(state, {thread}) {
+            state.threads.push(thread);
+        },
+        appendThreadToForum(state, { forumId, threadId  }) {
+            const forum = state.forums.find(forum => forum.id === forumId);
+            forum.posts = forum.posts || [];
+            forum.posts.push(threadId);
+        },
+        appendThreadToUser(state, { userId, threadId  }) {
+            const user = state.users.find(user => user.id === userId);
+            user.posts = user.posts || [];
+            user.posts.push(threadId);
         }
     }
 });
