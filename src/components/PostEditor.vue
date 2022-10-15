@@ -4,7 +4,8 @@
             <div class="form-group">
                 <textarea
                     v-model="text"
-                    name="" id="" cols="30" rows="10" class="form-input"></textarea>
+                    name="" id="" cols="30" rows="10" class="form-input">
+                </textarea>
             </div>
             <div class="form-acions">
                 <button class="btn-blue">Submit post</button>
