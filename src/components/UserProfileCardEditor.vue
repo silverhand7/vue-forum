@@ -71,7 +71,7 @@
             </div>
 
             <div class="btn-group space-between">
-                <button class="btn-ghost">Cancel</button>
+                <button :to="{name: 'Profile'}" @click="cancel" class="btn-ghost">Cancel</button>
                 <button type="submit" class="btn-blue">Save</button>
             </div>
         </form>
@@ -94,6 +94,10 @@ export default {
     methods: {
         save() {
             this.$store.dispatch('updateUser', { ...this.activeUser }); //need to use spread operator so the state will not reference to the activeUser object
+            this.$router.push({name: 'Profile'}); //redirect
+        },
+        cancel() {
+            this.$router.push({name: 'Profile'});
         }
     }
 }

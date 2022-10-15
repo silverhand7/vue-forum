@@ -1,8 +1,8 @@
 <template>
     <div class="flex-grid">
         <div class="col-3 push-top">
-            <user-profile-card :user="user"></user-profile-card>
-            <user-profile-card-editor :user="user"></user-profile-card-editor>
+            <user-profile-card v-if="!edit" :user="user"></user-profile-card>
+            <user-profile-card-editor v-else :user="user"></user-profile-card-editor>
         </div>
 
         <div class="col-7 push-top">
@@ -31,6 +31,12 @@ export default {
         PostList,
         UserProfileCard,
         UserProfileCardEditor
+    },
+    props: {
+        edit: {
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
         ...mapGetters({ user: 'authUser' }),

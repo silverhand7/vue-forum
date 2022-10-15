@@ -20,6 +20,11 @@
             <i class="fa fa-globe"></i> <a :href="user.website">{{ user.website }}</a>
         </p>
     </div>
+    <div class="text-center">
+    <p class="text-xsmall text-faded text-center">Member since june 2003, last visited 4 hours ago</p>
+    <hr>
+        <router-link :to="{name: 'ProfileEdit'}" class="btn-green btn-small">Edit Profile</router-link>
+    </div>
 </template>
 
 <script>
