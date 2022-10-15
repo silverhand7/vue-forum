@@ -93,7 +93,7 @@ export default {
     },
     methods: {
         save() {
-            console.log('saving')
+            this.$store.dispatch('updateUser', { ...this.activeUser }); //need to use spread operator so the state will not reference to the activeUser object
         }
     }
 }
