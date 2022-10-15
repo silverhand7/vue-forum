@@ -2,6 +2,7 @@
     <div class="flex-grid">
         <div class="col-3 push-top">
             <user-profile-card :user="user"></user-profile-card>
+            <user-profile-card-editor :user="user"></user-profile-card-editor>
         </div>
 
         <div class="col-7 push-top">
@@ -22,11 +23,14 @@
 <script>
 import PostList from '@/components/PostList';
 import UserProfileCard from '@/components/UserProfileCard.vue';
+import UserProfileCardEditor from '@/components/UserProfileCardEditor.vue';
 import { mapGetters } from 'vuex';
+
 export default {
     components: {
         PostList,
-        UserProfileCard
+        UserProfileCard,
+        UserProfileCardEditor
     },
     computed: {
         ...mapGetters({ user: 'authUser' }),
