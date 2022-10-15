@@ -17,9 +17,9 @@
             <ul>
                 <li class="navbar-user">
                     <a href="#">
-                        <img class="avatar-small" src="https://i.pravatar.cc/300" alt="">
+                        <img class="avatar-small" :src="authUser.avatar" :alt="`${authUser.name} profile picture`">
                         <span>
-                            Harry
+                            {{ authUser.name }}
                             <img class="icon-profile" src="assets/img/svg/arrow-profile.svg" alt="">
                         </span>
                     </a>
@@ -60,3 +60,13 @@
         </nav>
     </header>
 </template>
+
+<script>
+import { mapGetters } from 'vuex';
+
+export default {
+    computed: {
+        ...mapGetters(['authUser'])
+    }
+}
+</script>
