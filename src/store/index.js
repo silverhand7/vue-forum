@@ -35,8 +35,8 @@ export default createStore({
             post.publishedAt = Math.floor(Date.now() / 1000);
             commit('setPost', { post });
             commit('appendPostToThread', {
-                postId: post.id,
-                threadId: post.threadId
+                parentId: post.threadId,
+                childId: post.id
             });
         },
         updateUser({ commit }, user) {
@@ -59,8 +59,8 @@ export default createStore({
                 id
             }
             commit('setThread', { thread });
-            commit('appendThreadToUser', { userId, threadId: id });
-            commit('appendThreadToForum', { forumId, threadId: id });
+            commit('appendThreadToUser', { parentId: userId, childId: id });
+            commit('appendThreadToForum', { parentId: forumId, childId: id });
             dispatch('createPost', { text, threadId: id });
             return findById(state.threads, id);
         },
@@ -78,11 +78,6 @@ export default createStore({
         setPost(state, { post }) {
             upsert(state.posts, post);
         },
-        appendPostToThread(state, { postId, threadId}) {
-            const thread = findById(state.threads, threadId);
-            thread.posts = thread.posts || [];
-            thread.posts.push(postId);
-        },
         setUser(state, { user, userId }) {
             const userIndex = state.users.findIndex(user => user.id === userId);
             state.users[userIndex] = user;
@@ -90,15 +85,26 @@ export default createStore({
         setThread(state, { thread }) {
             upsert(state.threads, thread);
         },
-        appendThreadToForum(state, { forumId, threadId  }) {
-            const forum = findById(state.forums, forumId);
-            forum.posts = forum.posts || [];
-            forum.posts.push(threadId);
-        },
-        appendThreadToUser(state, { userId, threadId  }) {
-            const user = findById(state.users, userId);
-            user.posts = user.posts || [];
-            user.posts.push(threadId);
-        }
+
+        appendPostToThread: makeAppendChildToParentMutation({
+            parent: 'threads',
+            child: 'posts'
+        }),
+        appendThreadToForum: makeAppendChildToParentMutation({
+            parent: 'forums',
+            child: 'threads'
+        }),
+        appendThreadToUser: makeAppendChildToParentMutation({
+            parent: 'users',
+            child: 'threads'
+        })
     }
 });
+
+function makeAppendChildToParentMutation({ parent, child }) {
+    return (state, { parentId, childId}) => {
+        const resource = findById(state[parent], parentId);
+        resource[child] = resource[child] || [];
+        resource[child].push(childId);
+    }
+}
