@@ -60,7 +60,7 @@ export default createStore({
             post.id = 'ggg' + Math.random();
             post.userId = state.authId;
             post.publishedAt = Math.floor(Date.now() / 1000);
-            commit('setPost', { post });
+            commit('setItem', { resource: 'posts', item: post });
             commit('appendPostToThread', {
                 parentId: post.threadId,
                 childId: post.id
@@ -71,9 +71,9 @@ export default createStore({
             });
         },
         updateUser({ commit }, user) {
-            commit('setUser', {
-                user,
-                userId: user.id
+            commit('setItem', {
+                resource: 'users',
+                item: user
             });
         },
         async createThread({ commit, state, dispatch }, {
@@ -89,7 +89,7 @@ export default createStore({
                 userId,
                 id
             }
-            commit('setThread', { thread });
+            commit('setItem', { resource: 'threads', item: thread });
             commit('appendThreadToUser', { parentId: userId, childId: id });
             commit('appendThreadToForum', { parentId: forumId, childId: id });
             dispatch('createPost', { text, threadId: id });
@@ -100,52 +100,46 @@ export default createStore({
             const post = findById(state.posts, thread.posts[0]);
             const newThread = { ...thread, title }
             const newPost = { ...post, text }
-            commit('setThread', { thread: newThread});
-            commit('setPost', { post: newPost});
+            commit('setItem', { resource: 'threads', item: newThread});
+            commit('setItem', { resource: 'posts', item: newPost});
             return newThread;
         },
-        fetchThread({ state, commit }, { id }) {
-            console.log('firebase');
-            return new Promise((resolve) => { // will resolve when firebase call is done
-                firebase.firestore().collection('threads').doc(id).onSnapshot((doc) => {
-                    const thread = { ...doc.data(), id: doc.id }
-                    commit('setThread', { thread });
-                    resolve(thread);
+        fetchThread({ dispatch }, { id }) {
+            return dispatch('fetchItem', { resource: 'threads', id, emoji: 't'});
+        },
+        fetchUser({ dispatch }, { id }) {
+            return dispatch('fetchItem', { resource: 'users', id, emoji: 'u'});
+        },
+        fetchPost({ dispatch }, { id }) {
+            return dispatch('fetchItem', { resource: 'posts', id, emoji: 'p'});
+        },
+        fetchPosts( { dispatch }, { ids }) {
+            return dispatch('fetchItems', { resource: 'posts', ids, emoji: 'p' })
+        },
+        fetchUsers( { dispatch }, { ids }) {
+            return dispatch('fetchItems', { resource: 'users', ids, emoji: 'u' })
+        },
+        fetchThreads( { dispatch }, { ids }) {
+            return dispatch('fetchItems', { resource: 'threads', ids, emoji: 't' })
+        },
+        fetchItem({ state, commit }, { id, emoji, resource }) {
+            console.log('fire', emoji, id);
+            return new Promise((resolve) => {
+                firebase.firestore().collection(resource).doc(id).onSnapshot((doc) => {
+                    const item = { ...doc.data(), id: doc.id }
+                    commit('setItem', { resource, id, item });
+                    resolve(item);
                 });
             });
         },
-        fetchUser({ state, commit }, { id }) {
-            console.log('firebase');
-            return new Promise((resolve) => {
-                firebase.firestore().collection('users').doc(id).onSnapshot((doc) => {
-                    const user = { ...doc.data(), id: doc.id }
-                    commit('setUser', { user });
-                    resolve(user);
-                });
-            });
-        },
-        fetchPost({ state, commit }, { id }) {
-            console.log('firebase');
-            return new Promise((resolve) => {
-                firebase.firestore().collection('posts').doc(id).onSnapshot((doc) => {
-                    const post = { ...doc.data(), id: doc.id }
-                    commit('setPost', { post });
-                    resolve(post);
-                });
-            });
+        fetchItems({ dispatch }, { ids, resource, emoji}) {
+            return Promise.all(ids.map(id => dispatch('fetchItem', { id, resource, emoji })));
         }
     },
     mutations: {
-        setPost(state, { post }) {
-            upsert(state.posts, post);
+        setItem(state, { resource, item }) {
+            upsert(state[resource], item);
         },
-        setThread(state, { thread }) {
-            upsert(state.threads, thread);
-        },
-        setUser(state, { user }) {
-            upsert(state.users, user);
-        },
-
         appendPostToThread: makeAppendChildToParentMutation({
             parent: 'threads',
             child: 'posts'
