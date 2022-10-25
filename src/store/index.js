@@ -104,39 +104,25 @@ export default createStore({
             commit('setItem', { resource: 'posts', item: newPost});
             return newThread;
         },
+
+        // ---------------------------------
+        // Fetch Single Resource
+        // ---------------------------------
+
+        fetchCategory({ dispatch }, { id }) {
+            return dispatch('fetchItem', { resource: 'categories', id, emoji: 'c'});
+        },
+        fetchForum({ dispatch }, { id }) {
+            return dispatch('fetchItem', { resource: 'forums', id, emoji: 'f'});
+        },
         fetchThread({ dispatch }, { id }) {
             return dispatch('fetchItem', { resource: 'threads', id, emoji: 't'});
-        },
-        fetchUser({ dispatch }, { id }) {
-            return dispatch('fetchItem', { resource: 'users', id, emoji: 'u'});
         },
         fetchPost({ dispatch }, { id }) {
             return dispatch('fetchItem', { resource: 'posts', id, emoji: 'p'});
         },
-        fetchPosts( { dispatch }, { ids }) {
-            return dispatch('fetchItems', { resource: 'posts', ids, emoji: 'p' });
-        },
-        fetchUsers( { dispatch }, { ids }) {
-            return dispatch('fetchItems', { resource: 'users', ids, emoji: 'u' });
-        },
-        fetchThreads( { dispatch }, { ids }) {
-            return dispatch('fetchItems', { resource: 'threads', ids, emoji: 't' });
-        },
-        fetchForums( { dispatch }, { ids }) {
-            return dispatch('fetchItems', { resource: 'forums', ids, emoji: 'f' });
-        },
-        fetchItem({ state, commit }, { id, emoji, resource }) {
-            console.log('fire', emoji, id);
-            return new Promise((resolve) => {
-                firebase.firestore().collection(resource).doc(id).onSnapshot((doc) => {
-                    const item = { ...doc.data(), id: doc.id }
-                    commit('setItem', { resource, id, item });
-                    resolve(item);
-                });
-            });
-        },
-        fetchItems({ dispatch }, { ids, resource, emoji}) {
-            return Promise.all(ids.map(id => dispatch('fetchItem', { id, resource, emoji })));
+        fetchUser({ dispatch }, { id }) {
+            return dispatch('fetchItem', { resource: 'users', id, emoji: 'u'});
         },
         fetchAllCategories({ commit }) {
             console.log('firebase', 'c', 'all');
@@ -150,7 +136,42 @@ export default createStore({
                     resolve(categories);
                 });
             });
-        }
+        },
+
+        // ---------------------------------
+        // Fetch Multiple Resources
+        // ---------------------------------
+
+        fetchCategories( { dispatch }, { ids }) {
+            return dispatch('fetchItems', { resource: 'categories', ids, emoji: 'c' });
+        },
+        fetchForums( { dispatch }, { ids }) {
+            return dispatch('fetchItems', { resource: 'forums', ids, emoji: 'f' });
+        },
+        fetchThreads( { dispatch }, { ids }) {
+            return dispatch('fetchItems', { resource: 'threads', ids, emoji: 't' });
+        },
+        fetchPosts( { dispatch }, { ids }) {
+            return dispatch('fetchItems', { resource: 'posts', ids, emoji: 'p' });
+        },
+        fetchUsers( { dispatch }, { ids }) {
+            return dispatch('fetchItems', { resource: 'users', ids, emoji: 'u' });
+        },
+
+        fetchItem({ state, commit }, { id, emoji, resource }) {
+            console.log('fire', emoji, id);
+            return new Promise((resolve) => {
+                firebase.firestore().collection(resource).doc(id).onSnapshot((doc) => {
+                    const item = { ...doc.data(), id: doc.id }
+                    commit('setItem', { resource, id, item });
+                    resolve(item);
+                });
+            });
+        },
+        fetchItems({ dispatch }, { ids, resource, emoji}) {
+            return Promise.all(ids.map(id => dispatch('fetchItem', { id, resource, emoji })));
+        },
+
     },
     mutations: {
         setItem(state, { resource, item }) {
