@@ -114,13 +114,16 @@ export default createStore({
             return dispatch('fetchItem', { resource: 'posts', id, emoji: 'p'});
         },
         fetchPosts( { dispatch }, { ids }) {
-            return dispatch('fetchItems', { resource: 'posts', ids, emoji: 'p' })
+            return dispatch('fetchItems', { resource: 'posts', ids, emoji: 'p' });
         },
         fetchUsers( { dispatch }, { ids }) {
-            return dispatch('fetchItems', { resource: 'users', ids, emoji: 'u' })
+            return dispatch('fetchItems', { resource: 'users', ids, emoji: 'u' });
         },
         fetchThreads( { dispatch }, { ids }) {
-            return dispatch('fetchItems', { resource: 'threads', ids, emoji: 't' })
+            return dispatch('fetchItems', { resource: 'threads', ids, emoji: 't' });
+        },
+        fetchForums( { dispatch }, { ids }) {
+            return dispatch('fetchItems', { resource: 'forums', ids, emoji: 'f' });
         },
         fetchItem({ state, commit }, { id, emoji, resource }) {
             console.log('fire', emoji, id);
@@ -134,6 +137,19 @@ export default createStore({
         },
         fetchItems({ dispatch }, { ids, resource, emoji}) {
             return Promise.all(ids.map(id => dispatch('fetchItem', { id, resource, emoji })));
+        },
+        fetchAllCategories({ commit }) {
+            console.log('firebase', 'c', 'all');
+            return new Promise((resolve) => {
+                firebase.firestore().collection('categories').onSnapshot((querySnapshot) => {
+                    const categories = querySnapshot.docs.map(doc => {
+                        const item = { id: doc.id, ...doc.data() }
+                        commit('setItem', { resource: 'categories', item });
+                        return item;
+                    });
+                    resolve(categories);
+                });
+            });
         }
     },
     mutations: {
